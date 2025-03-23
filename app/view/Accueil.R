@@ -54,7 +54,8 @@ ui <- function(id) {
                       showcase_layout = "top right",
                       theme = "secondary",
                       bslib::popover(
-                        shiny::actionButton("btn_simu", "Accès module", class = "btn-custom"),
+                        shiny::actionButton(ns("btn_simu"), value ="module_urssaf",
+                                            label = "Accès module", class = "btn-custom"),
 
                         "",
                         "",
@@ -67,7 +68,8 @@ ui <- function(id) {
                       showcase_layout = "top right",
                       theme = "primary",
                       bslib::popover(
-                        shiny::actionButton("btn_paie", "Accès module", class = "btn-custom"),
+                        shiny::actionButton(ns("btn_paie"), value ="module_paie",
+                                            label = "Accès module", class = "btn-custom"),
 
                         "",
                         "",
@@ -80,7 +82,8 @@ ui <- function(id) {
                       showcase_layout = "top right",
                       theme = "secondary",
                       bslib::popover(
-                        shiny::actionButton("btn_conso", "Accès module", class = "btn-custom"),
+                        shiny::actionButton(ns("btn_conso"), value ="module_conso",
+                                            label = "Accès module", class = "btn-custom"),
 
                         "",
                         "",
@@ -93,7 +96,8 @@ ui <- function(id) {
                       showcase_layout = "top right",
                       theme = "primary",
                       bslib::popover(
-                        shiny::actionButton("btn_graph", "Accès module", class = "btn-custom"),
+                        shiny::actionButton(ns("btn_graph"), value ="module_graph",
+                                            label = "Accès module", class = "btn-custom"),
 
                         "",
                         "",
@@ -110,6 +114,38 @@ ui <- function(id) {
 #' @export
 server <- function(id) { #Si chart depend d'un df on peut rentrer data en argument
   moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+    # ## update to sub-page/sub-URL when we move to a new tab from the navbar
+    shiny::observeEvent(session$clientData$url_hash, {
+      currentHash <- sub("#", "", session$clientData$url_hash)
+      if(is.null(input$btn_simu) || !is.null(currentHash) && currentHash != input$btn_simu){
+        shiny::freezeReactiveValue(input, "btn_simu")
+        shiny::updateNavbarPage(session, "btn_simu", selected = currentHash)
+      }
+    }, priority = 1)
+
+    ## push changes to the sub-URL to the browser history so that back/forward browser buttons work
+    shiny::observeEvent(input$btn_simu, {
+
+      print("bèèèèè")
+
+      # currentHash <- sub("#", "", session$clientData$url_hash)
+      # pushQueryString <- paste0("#", input$btn_simu)
+      # if(is.null(currentHash) || currentHash != input$btn_simu){
+      #   shiny::freezeReactiveValue(input, "btn_simu")
+      #   shiny::updateQueryString(pushQueryString, mode = "push", session)
+      # }
+
+      #Afficher le calculateur
+      shiny::updateTabsetPanel(
+        session,
+        "main_tabs",
+        selected = "urssaf"
+      )
+
+    })
+
+
 
   })
 }

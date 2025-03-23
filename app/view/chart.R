@@ -1,23 +1,39 @@
-# app/view/chart.R
-
 box::use(
   dplyr,
-  shiny[h3, moduleServer, NS, tagList],
+  shiny[h3, moduleServer, NS, tagList, plotOutput, renderPlot, actionButton, reactiveVal, observeEvent],
 )
 box::use(
   app/logic/fct_utils[transform_data],
-) #Ici on ajoute une fonction qui provient de logic/fct_utils
+)
 
 #' @export
 ui <- function(id) {
   ns <- NS(id)
 
-  h3("Chart")
+  tagList(
+    h3("Chart"),
+    actionButton(ns("show_chart"), "Afficher le graph"),
+    plotOutput(ns("plot"))
+  )
 }
 
 #' @export
-server <- function(id) { #Si chart depend d'un df on peut rentrer data en argument
+server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    print("Chart module server part works!")
+    data <- reactiveVal(NULL)
+
+    observeEvent(input$show_chart, {
+      # Simulation de données, peut être remplacé par une transformation de données réelle
+      df <- data.frame(
+        x = 1:10,
+        y = rnorm(10)
+      )
+      data(df)
+    })
+
+    output$plot <- renderPlot({
+      shiny::req(data())  # Attend que les données soient disponibles
+      plot(data()$x, data()$y, type = "b", col = "blue", pch = 19, main = "Graphique")
+    })
   })
 }
