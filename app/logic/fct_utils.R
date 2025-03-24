@@ -12,3 +12,16 @@ transform_data <- function(data) {
     values_from = Population
   )
 }
+
+#' @export
+create_config <- function(){
+
+  config <- list(
+    urssaf = FALSE,
+    fiche_paie = FALSE,
+    conso = FALSE,
+    graph = FALSE
+  )
+  return(config)
+}
+
