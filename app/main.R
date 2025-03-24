@@ -16,14 +16,10 @@ ui <- function(id) {
   ns <- NS(id)
 
   bootstrapPage(
-    shiny::tabsetPanel(
-      id = "main_tabs",
-      shiny::tabPanel("Module Accueil",
-                      Accueil$ui(ns("accueil"))),
-      shiny::tabPanel("Module URSSAF",
-                      module_urssaf$ui(ns("urssaf")))
-      #chart$ui(ns("chart"))
-    )
+    Accueil$ui(ns("accueil")),
+    # shiny::tabPanel("Module URSSAF",
+    #                 module_urssaf$ui(ns("urssaf")))
+    #chart$ui(ns("chart"))
   )
 }
 

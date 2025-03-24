@@ -10,33 +10,32 @@ box::use(
 ui <- function(id) {
   ns <- NS(id)
 
-  bslib::page_fluid(
+  bslib::page_sidebar(
 
-    shiny::tags$head(
-      shiny::tags$style(shiny::HTML("
-      .btn-custom {
-        background-color: #013220 !important; /* Vert sapin */
-        color: white !important; /* Texte blanc */
-        border-color: #013220 !important; /* Bordure assortie */
-      }
-    "))
+    sidebar = bslib::sidebar(
+      "Great sidebar",
+      width = 200,
+      position = "left",
+      open = "always",
+      fillable = TRUE
     ),
 
-    bslib::page_sidebar(
-
-      sidebar = bslib::sidebar(
-        "Great sidebar",
-        width = 150,
-        position = "left",
-        open = "always"
-      ),
-      shiny::tags$script(
-        src = "https://mon-entreprise.urssaf.fr/simulateur-iframe-integration.js",
-        `data-module` = "simulateur-embauche",
-        `data-couleur` = "#005aa1"
-      )
+    shiny::tagList(
+      shiny::div(id = "simulator-container"),  # Un conteneur pour l'iframe
+      shiny::tags$script(shiny::HTML(
+        '
+      setTimeout(function() {
+        var script = document.createElement("script");
+        script.src = "https://mon-entreprise.urssaf.fr/simulateur-iframe-integration.js";
+        script.setAttribute("data-module", "simulateur-embauche");
+        script.setAttribute("data-couleur", "#005aa1");
+        document.getElementById("simulator-container").appendChild(script);
+      }, 500);
+      '
+      ))
     )
   )
+
 
 }
 
