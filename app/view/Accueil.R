@@ -11,8 +11,17 @@ box::use(
   app/logic/fct_utils[transform_data],
   app/logic/fct_utils[create_config],
   app/view/module_urssaf,
+  app/view/module_tva,
   app/view/Accueil_detail
 ) #Ici on ajoute une fonction qui provient de logic/fct_utils
+
+box::use(
+  app/logic/fct_utils[transform_data],
+  app/logic/fct_utils[api_create_body],
+  app/logic/fct_utils[api_get_result],
+  app/logic/fct_utils[api_beau_labels],
+  app/logic/fct_utils[transform_labels],
+)
 
 #' @export
 ui <- function(id) {
@@ -51,12 +60,23 @@ server <- function(id) { #Si chart depend d'un df on peut rentrer data en argume
 
     shiny::observeEvent(accueil_inputs()$btn_simu, { # Utilisation correcte de reactive()
       print("bééééé")
+
       output$main_ui <- shiny::renderUI({
         module_urssaf$ui(ns("urssaf"))
       })
       module_urssaf$server("urssaf")
 
     })
+    shiny::observeEvent(accueil_inputs()$btn_conso, { # Utilisation correcte de reactive()
+      print("conso")
+
+      output$main_ui <- shiny::renderUI({
+        module_tva$ui(ns("conso"))
+      })
+      module_tva$server("conso")
+
+    })
+
   })
 }
 

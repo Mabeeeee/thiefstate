@@ -54,8 +54,8 @@ body <- list(
     dirigeant = "non",
     `salarié . activité partielle` = "non",
     `salarié . rémunération . net . à payer avant impôt` = list(
-      valeur = 2300,
-      unité = "€/mois"
+      valeur = 230000,
+      unité = "€/an"
     )
   )
 )
@@ -117,19 +117,19 @@ tab_cotisation <- data.frame(
 library(dplyr)
 library(stringr)
 
-df_clean <- tab_cotisation %>%
+df_clean <- tab_cotisation |>
   mutate(
     type = ifelse(str_detect(label, "\\(Employeur\\)"), "employeur", "salarié"),
     label_base = str_trim(str_remove(label, "\\s*\\(.*\\)"))
-  ) %>%
-  select(label_base, type, montant) %>%
+  ) |>
+  select(label_base, type, montant) |>
   tidyr::pivot_wider(
     names_from = type,
     values_from = montant,
     names_prefix = "montant_"
-  ) %>%
-  mutate(across(where(is.numeric), ~ifelse(is.na(.), 0, .))) %>%
-  mutate(total = montant_employeur + montant_salarié) %>%
+  ) |>
+  mutate(across(where(is.numeric), ~ifelse(is.na(.), 0, .))) |>
+  mutate(total = montant_employeur + montant_salarié) |>
   filter(total != 0)
 
 
@@ -149,7 +149,7 @@ tempo_revenu <- c(
   "€/an"
 )
 
-tempo_choisie <- tempo_revenu[1]
+tempo_choisie <- tempo_revenu[2]
 
 body_salaires <- list(
   expressions = revenus_api,
@@ -157,7 +157,7 @@ body_salaires <- list(
     dirigeant = "non",
     `salarié . activité partielle` = "non",
     !!rev_choisi := list(
-      valeur = 2300,
+      valeur = 230000,
       unité = tempo_choisie
     )
   )
@@ -190,3 +190,38 @@ df_salaires <- data.frame(
   labels = labels_revenus,
   montant = salaires
 )
+
+
+#Gérer la consommation ----
+
+create_un_montant <- function(df){
+
+  if(any(c("débit", "crédit", "debit", "credit") %in% tolower(colnames(df)))){
+
+    df <- df |>
+      dplyr::rowwise() |>
+      dplyr::mutate(montant = sum(dplyr::c_across(dplyr::ends_with("it")), na.rm = TRUE)) |>
+      dplyr::ungroup()
+
+  }
+
+}
+
+df_conso <- readr::read_csv2("app/static/data/Tableaux-flux-2023-2025.csv") |>
+  dplyr::mutate(dplyr::across(dplyr::where(is.numeric), ~ifelse(is.na(.), 0, .))) |>
+  create_un_montant() |>
+  dplyr::rename_all(tolower) |>
+  dplyr::select(dplyr::starts_with("date"), dplyr::all_of(c("categorie", "sous categorie", "montant")))
+
+
+
+
+
+
+
+
+
+
+
+
+
