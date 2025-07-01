@@ -10,6 +10,7 @@ box::use(
   app/view/Accueil,
   app/view/module_urssaf,
   app/view/module_tva,
+  app/view/Accueil_detail
 )
 
 box::use(

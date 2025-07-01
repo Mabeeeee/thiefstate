@@ -10,6 +10,7 @@ box::use(
 box::use(
   app/logic/fct_utils[transform_data],
   app/view/module_urssaf,
+  app/view/module_tva
 ) #Ici on ajoute une fonction qui provient de logic/fct_utils
 
 #' @export
@@ -30,7 +31,7 @@ ui <- function(id) {
     shiny::h2("Application"),
     shiny::h6("Grâce à cette application vous pouvez consulter les flux d'argent\n de votre super brut
                 à votre salaire consommé. "),
-    shiny::a("Pour cela, 4 modules sont à disposition :",
+    shiny::p("Pour cela, 4 modules sont à disposition :",
              "- Un module reprenant le calculateur de l'URSSAF qui permet de générer une fiche de paie
                 au format pdf. Ce fichier permet d'obtenir les données de flux du super brut au salaire net avant impôt.",
              "- Un deuxieme module permettant de générer les données à partir de la fiche créée dans le premier.",
@@ -96,7 +97,17 @@ server <- function(id) { #Si chart depend d'un df on peut rentrer data en argume
     # Retourner l'input du module pour être accessible ailleurs
     return(shiny::reactive({ list(btn_simu = input$btn_simu,
                                   btn_conso = input$btn_conso,
-                                  btn_graph = input$btn_graph) }))
+                                  btn_graph = input$btn_graph,
+                                  btn_retour = input$btn_graph) }))
+
+    shiny::observeEvent(input$btn_retour, { # Utilisation correcte de reactive()
+
+      shiny::renderUI({
+        Accueil_detail$ui(ns("Accueil_detail"))
+      })
+      Accueil_detail$server("Accueil_detail")
+
+    })
 
   })
 }

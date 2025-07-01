@@ -5,6 +5,7 @@ box::use(
 box::use(
   app/logic/fct_utils[get_tva_data],
   app/logic/fct_utils[get_tva_tab],
+  app/view/Accueil_detail
 )
 
 #' @export
@@ -66,8 +67,6 @@ server <- function(id) {
       )
     })
 
-    test <- donnees()
-
     output$table_tva <- DT::renderDT({
 
       testo <- vroom::vroom("app/static/data/Tableau_TVA_moyenne_v2.csv", delim = ",") |>
@@ -117,6 +116,7 @@ server <- function(id) {
       )
 
     })
-
+    # Retourner l'input du module pour être accessible ailleurs
+    return(shiny::reactive({ list(btn_retour = input$btn_retour) }))
   })
 }

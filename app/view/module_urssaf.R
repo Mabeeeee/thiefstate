@@ -8,6 +8,7 @@ box::use(
   app/logic/fct_utils[api_get_result],
   app/logic/fct_utils[api_beau_labels],
   app/logic/fct_utils[transform_labels],
+  app/view/Accueil_detail
 )
 
 #' @export
@@ -120,15 +121,13 @@ server <- function(id) {
 
     ns <- session$ns
 
-
-
     shinyjs::useShinyjs()
 
-    tempo <- input$btn_mnt_tempo
-    montant <- input$mnt
-    type_montant <- input$type_mnt
-    type_contrat <- input$type_ctr
-    cadre <- input$btn_ctr
+    # tempo <- input$btn_mnt_tempo
+    # montant <- input$mnt
+    # type_montant <- input$type_mnt
+    # type_contrat <- input$type_ctr
+    # cadre <- input$btn_ctr
     temps_part <- "non"
 
     shiny::observeEvent(input$btn_mnt_tempo,{
@@ -249,9 +248,9 @@ server <- function(id) {
 
       tab_super_net <- salaires |> dplyr::filter(labels == "Salaire Brut") |>
         rbind(cotisations |> dplyr::filter(.data[["montant_salarié"]] != 0) |>
-                               dplyr::mutate(!!"montant_salarié" := -.data[["montant_salarié"]]) |>
-                               dplyr::select(label_base, .data[["montant_salarié"]]) |> dplyr::rename(labels = label_base,
-                                                                                                      montants = .data[["montant_salarié"]])) |>
+                dplyr::mutate(!!"montant_salarié" := -.data[["montant_salarié"]]) |>
+                dplyr::select(label_base, .data[["montant_salarié"]]) |> dplyr::rename(labels = label_base,
+                                                                                       montants = .data[["montant_salarié"]])) |>
 
         rbind(salaires |> dplyr::filter(labels %in% c("Net à Payer Avant Impôt", "Net Payé Après Impôt")))
 
@@ -289,6 +288,7 @@ server <- function(id) {
           DT::formatCurrency(columns = "montants", currency = "€", mark = " ", dec.mark = ",")
       })
     })
-
+    # Retourner l'input du module pour être accessible ailleurs
+    return(shiny::reactive({ list(btn_retour = input$btn_retour) }))
   })
 }

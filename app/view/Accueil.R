@@ -57,9 +57,30 @@ server <- function(id) { #Si chart depend d'un df on peut rentrer data en argume
 
     # Récupérer les inputs du module d'accueil
     accueil_inputs <- Accueil_detail$server("Accueil_detail")
+    urssaf_inputs <- module_urssaf$server("urssaf")
+    tva_inputs <- module_tva$server("conso")
 
+
+    #Gestion du retour à la page principale ----
+    shiny::observeEvent(tva_inputs()$btn_retour, { # Utilisation correcte de reactive()
+
+      output$main_ui <- shiny::renderUI({
+        Accueil_detail$ui(ns("Accueil_detail"))
+      })
+      Accueil_detail$server(ns("Accueil_detail"))
+
+    })
+    shiny::observeEvent(urssaf_inputs()$btn_retour, { # Utilisation correcte de reactive()
+
+      output$main_ui <- shiny::renderUI({
+        Accueil_detail$ui(ns("Accueil_detail"))
+      })
+      Accueil_detail$server(ns("Accueil_detail"))
+
+    })
+
+    #Lancement des pages des calculs ----
     shiny::observeEvent(accueil_inputs()$btn_simu, { # Utilisation correcte de reactive()
-      print("bééééé")
 
       output$main_ui <- shiny::renderUI({
         module_urssaf$ui(ns("urssaf"))
@@ -68,7 +89,6 @@ server <- function(id) { #Si chart depend d'un df on peut rentrer data en argume
 
     })
     shiny::observeEvent(accueil_inputs()$btn_conso, { # Utilisation correcte de reactive()
-      print("conso")
 
       output$main_ui <- shiny::renderUI({
         module_tva$ui(ns("conso"))
@@ -76,6 +96,9 @@ server <- function(id) { #Si chart depend d'un df on peut rentrer data en argume
       module_tva$server("conso")
 
     })
+
+
+
 
   })
 }
