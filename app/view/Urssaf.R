@@ -25,7 +25,7 @@ ui <- function(id) {
     bslib::page_sidebar(
 
       sidebar = bslib::sidebar(
-        "Great sidebar",
+        "Navigation",
         width = 150,
         position = "left",
         open = "always"

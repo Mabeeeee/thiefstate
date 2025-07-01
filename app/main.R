@@ -9,6 +9,16 @@ box::use(
   app/view/chart,
   app/view/Accueil,
   app/view/module_urssaf,
+  app/view/module_tva,
+  app/view/Accueil_detail
+)
+
+box::use(
+  app/logic/fct_utils[transform_data],
+  app/logic/fct_utils[api_create_body],
+  app/logic/fct_utils[api_get_result],
+  app/logic/fct_utils[api_beau_labels],
+  app/logic/fct_utils[transform_labels],
 )
 
 #' @export
@@ -16,10 +26,8 @@ ui <- function(id) {
   ns <- NS(id)
 
   bootstrapPage(
+    shinyjs::useShinyjs(),
     Accueil$ui(ns("accueil")),
-    # shiny::tabPanel("Module URSSAF",
-    #                 module_urssaf$ui(ns("urssaf")))
-    #chart$ui(ns("chart"))
   )
 }
 
@@ -27,7 +35,5 @@ ui <- function(id) {
 server <- function(id) {
   moduleServer(id, function(input, output, session) {
     Accueil$server("accueil")
-    module_urssaf$server("urssaf")
-    #chart$server("chart") #Si chart depend d'un df on peut rentrer data en argument
   })
 }

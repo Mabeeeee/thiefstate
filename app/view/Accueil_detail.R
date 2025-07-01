@@ -10,6 +10,7 @@ box::use(
 box::use(
   app/logic/fct_utils[transform_data],
   app/view/module_urssaf,
+  app/view/module_tva
 ) #Ici on ajoute une fonction qui provient de logic/fct_utils
 
 #' @export
@@ -19,17 +20,18 @@ ui <- function(id) {
   bslib::page_sidebar(
 
     sidebar = bslib::sidebar(
-      "Great sidebar",
+      "Navigation",
       width = 200,
       position = "left",
-      open = "always",
-      fillable = TRUE
+      open = "open",
+      fillable = TRUE,
+      shiny::actionButton(ns("btn_retour"), "Retour page principale")
     ),
 
     shiny::h2("Application"),
     shiny::h6("Grâce à cette application vous pouvez consulter les flux d'argent\n de votre super brut
                 à votre salaire consommé. "),
-    shiny::a("Pour cela, 4 modules sont à disposition :",
+    shiny::p("Pour cela, 4 modules sont à disposition :",
              "- Un module reprenant le calculateur de l'URSSAF qui permet de générer une fiche de paie
                 au format pdf. Ce fichier permet d'obtenir les données de flux du super brut au salaire net avant impôt.",
              "- Un deuxieme module permettant de générer les données à partir de la fiche créée dans le premier.",
@@ -42,7 +44,7 @@ ui <- function(id) {
         value = "Calculateur URSSAF",
         showcase = bsicons::bs_icon("piggy-bank"),
         showcase_layout = "top right",
-        theme = "secondary",
+        theme = "blue",
         bslib::popover(
           shiny::actionButton(ns("btn_simu"), value ="module_urssaf",
                               label = "Accès module", class = "btn-custom"),
@@ -53,24 +55,10 @@ ui <- function(id) {
         )
       )),
       bslib::card(bslib::value_box(
-        value = "Fiche de paie",
-        showcase = bsicons::bs_icon("file-earmark-spreadsheet"),
-        showcase_layout = "top right",
-        theme = "primary",
-        bslib::popover(
-          shiny::actionButton(ns("btn_paie"), value ="module_paie",
-                              label = "Accès module", class = "btn-custom"),
-
-          "",
-          "",
-          placement = "right"
-        )
-      )),
-      bslib::card(bslib::value_box(
         value = "Consommation",
         showcase = bsicons::bs_icon("car-front"),
         showcase_layout = "top right",
-        theme = "secondary",
+        theme = "white",
         bslib::popover(
           shiny::actionButton(ns("btn_conso"), value ="module_conso",
                               label = "Accès module", class = "btn-custom"),
@@ -84,7 +72,7 @@ ui <- function(id) {
         value = "Graphique",
         showcase = bsicons::bs_icon("bar-chart-steps"),
         showcase_layout = "top right",
-        theme = "primary",
+        theme = "red",
         bslib::popover(
           shiny::actionButton(ns("btn_graph"), value ="module_graph",
                               label = "Accès module", class = "btn-custom"),
@@ -94,10 +82,9 @@ ui <- function(id) {
           placement = "right"
         )
       )),
-      width = "400px",
+      width = "500px",
       height = "500px"
-    ),
-    shiny::uiOutput(ns("urssaf"))
+    )
   )
 
 }
@@ -108,7 +95,19 @@ server <- function(id) { #Si chart depend d'un df on peut rentrer data en argume
     ns <- session$ns
 
     # Retourner l'input du module pour être accessible ailleurs
-    return(shiny::reactive({ list(btn_simu = input$btn_simu) }))
+    return(shiny::reactive({ list(btn_simu = input$btn_simu,
+                                  btn_conso = input$btn_conso,
+                                  btn_graph = input$btn_graph,
+                                  btn_retour = input$btn_graph) }))
+
+    shiny::observeEvent(input$btn_retour, { # Utilisation correcte de reactive()
+
+      shiny::renderUI({
+        Accueil_detail$ui(ns("Accueil_detail"))
+      })
+      Accueil_detail$server("Accueil_detail")
+
+    })
 
   })
 }
